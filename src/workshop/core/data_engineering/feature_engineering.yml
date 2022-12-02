@@ -9,7 +9,7 @@ command: >-
 inputs:
   input_folder:
     type: uri_folder
-    path: azureml://datastores/workspaceblobstore/paths/mlops_workshop_data/ 
+    path: azureml://datastores/workspaceblobstore/paths/mlops_workshop_data/
   run_mode: "remote"
   
 outputs:

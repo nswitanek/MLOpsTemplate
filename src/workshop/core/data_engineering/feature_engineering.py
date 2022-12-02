@@ -6,6 +6,7 @@ import argparse
 import sys
 import os
 from sklearn.model_selection import train_test_split
+
 sys.path.append(os.path.join(os.path.dirname(__file__),'../../'))
 def parse_args():
     # setup arg parser
@@ -38,6 +39,8 @@ def build_time_features(vector):
     hr_cos = np.cos(hour_of_day*(2.*np.pi/24))
     dy_sin = np.sin(day_of_week*(2.*np.pi/7))
     dy_cos = np.cos(day_of_week*(2.*np.pi/7))
+
+    # new comment to file
     
     return pd.Series((month_num, day_of_month, day_of_week, hour_of_day, country_code, hr_sin, hr_cos, dy_sin, dy_cos))
 
