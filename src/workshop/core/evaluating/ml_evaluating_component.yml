@@ -1,0 +1,30 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+version: 1b
+type: command
+code: ./
+command: >-
+  python ml_evaluating.py 
+  --prep_data ${{inputs.prep_data}}
+  --model_folder ${{inputs.model_folder}}
+  --run_mode ${{inputs.run_mode}}
+  
+inputs:
+  prep_data:
+    type: uri_folder
+  model_folder:
+    type: uri_folder
+  run_mode: 
+    type: string
+    default: remote
+  model_name:
+    type: string
+  
+environment:
+  conda_file: ./conda_ml_evaluating.yml
+  image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04:latest
+  
+compute: azureml:cpu-cluster
+name: ml_evaluation
+display_name: ml-evaluation
+experiment_name: ml-evaluation
+description: ml-evaluation

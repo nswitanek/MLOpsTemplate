@@ -1,0 +1,30 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+type: command
+
+code: ./
+
+command: >-
+  python ml_training.py 
+  --prep_data ${{inputs.prep_data}}
+  --model_folder ${{outputs.model_folder}}
+  --run_mode ${{inputs.run_mode}}
+  
+inputs:
+  prep_data:
+    type: uri_folder
+  run_mode: 
+    type: string
+    default: remote
+    
+outputs:
+  model_folder:
+    type: uri_folder
+
+environment:
+  conda_file: ./conda_ml_training.yml
+  image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04:latest
+compute: azureml:cpu-cluster
+name: ml_training
+display_name: ml-training
+experiment_name: ml-training
+description: ml-training

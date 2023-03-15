@@ -1,0 +1,55 @@
+$schema: https://azuremlschemas.azureedge.net/latest/pipelineJob.schema.json
+type: pipeline
+display_name: Training_pipeline_w_components
+experiment_name: Training_pipeline
+compute: azureml:cpu-cluster
+
+jobs:
+  prep_job:
+    type: command
+    component: azureml:feature_engineering@latest
+    inputs:
+      input_folder:
+        type: uri_folder
+        path: azureml://datastores/workspaceblobstore/paths/mlops_workshop_data/ 
+      run_mode: "remote"
+    outputs:
+      prep_data:
+        type: uri_folder
+        path: azureml://datastores/workspaceblobstore/paths/mlops_workshop_data/
+        mode: rw_mount
+    environment:
+      conda_file: ../data_engineering/conda_feature_engineering.yml
+      image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04:latest
+    description: Feature Engineering
+    
+  train_job:
+    type: command
+    component: azureml:ml_training@latest
+    inputs:
+      prep_data: ${{parent.jobs.prep_job.outputs.prep_data}}
+      run_mode: "remote"
+    outputs:
+      model_folder:
+        type: uri_folder
+        path: azureml://datastores/workspaceblobstore/paths/mlops_workshop_data/
+        mode: rw_mount
+    environment:
+      conda_file: ../training/conda_ml_training.yml
+      image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04:latest
+    description: ML Training
+    
+  evaluate_job:
+    type: command
+    component: azureml:ml_evaluation@latest
+    inputs:
+      run_mode: "remote"
+      model_name: "nyc_fare_prediction"
+      prep_data: ${{parent.jobs.prep_job.outputs.prep_data}}
+      model_folder: ${{parent.jobs.train_job.outputs.model_folder}}
+
+    environment:
+      conda_file: ../evaluating/conda_ml_evaluating.yml
+      image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04:latest
+    description: model-evaluation
+        
